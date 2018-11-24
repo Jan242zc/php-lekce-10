@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Entity\Supplier;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
@@ -68,6 +71,58 @@ class Product
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Manufacturer", inversedBy="products")
+     */
+    private $manufacturer;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Supplier", inversedBy="products")
+     */
+    private $Supplier;
+
+    public function __construct()
+    {
+        $this->Supplier = new ArrayCollection();
+    }
+    
+    public function getManufacturer(): ?Manufacturer
+    {
+        return $this->manufacturer;
+    }
+
+    public function setManufacturer(?Manufacturer $manufacturer): self
+    {
+        $this->manufacturer = $manufacturer;
+        return $this;
+    }
+
+    /**
+     * @return Collection|Supplier[]
+     */
+    public function getSupplier(): Collection
+    {
+        return $this->Supplier;
+    }
+
+    public function addSupplier(Supplier $supplier): self
+    {
+        if (!$this->Supplier->contains($supplier)) {
+            $this->Supplier[] = $supplier;
+        }
+
+        return $this;
+    }
+
+    public function removeSupplier(Supplier $supplier): self
+    {
+        if ($this->Supplier->contains($supplier)) {
+            $this->Supplier->removeElement($supplier);
+        }
 
         return $this;
     }
